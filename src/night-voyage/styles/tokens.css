@@ -1,0 +1,17 @@
+:root {
+  color-scheme: dark;
+  --night-ink: #050a12;
+  --night-surface: #09131f;
+  --night-surface-raised: #0e1c2a;
+  --night-line: rgba(169, 209, 224, 0.24);
+  --night-text: #f1f5f4;
+  --night-muted: #9fb2bb;
+  --night-cyan: #65e5eb;
+  --night-cyan-soft: #9cf3f0;
+  --night-yellow: #ffd05a;
+  --night-red: #ef6a68;
+  --night-focus: #ffffff;
+  --night-radius: 6px;
+  --night-container: 1220px;
+  --night-shadow: 0 22px 80px rgba(0, 0, 0, 0.34);
+}

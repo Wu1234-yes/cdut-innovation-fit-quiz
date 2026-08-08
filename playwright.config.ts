@@ -19,20 +19,20 @@ export default defineConfig({
   },
   projects: [
     {
-      name: 'mobile-375x812',
-      use: { ...devices['iPhone X'], viewport: { width: 375, height: 812 } },
-    },
-    {
       name: 'mobile-390x844',
       use: { ...devices['iPhone 13'], viewport: { width: 390, height: 844 } },
     },
     {
-      name: 'iPad Mini',
-      use: { ...devices['iPad Mini'] },
+      name: 'tablet-768x1024',
+      use: { ...devices['Desktop Chrome'], viewport: { width: 768, height: 1024 } },
     },
     {
       name: 'desktop-1024x768',
       use: { ...devices['Desktop Chrome'], viewport: { width: 1024, height: 768 } },
+    },
+    {
+      name: 'desktop-1280x720',
+      use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 720 } },
     },
     {
       name: 'desktop-1440x900',
