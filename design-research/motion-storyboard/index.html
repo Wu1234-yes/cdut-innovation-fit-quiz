@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>科创部门结果揭晓动效样片</title>
+    <style>
+      * { box-sizing: border-box; }
+      body { margin: 0; background: #07111f; }
+      @font-face {
+        font-family: "Microsoft YaHei Local";
+        src: local("Microsoft YaHei");
+      }
+      #result-reveal-root {
+        position: relative;
+        overflow: hidden;
+        width: 1920px;
+        height: 1080px;
+        color: #f7fafc;
+        background: #07111f;
+        font-family: "Microsoft YaHei Local", system-ui, sans-serif;
+      }
+      .documentary-image {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.52;
+      }
+      .image-shade {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, rgba(7,17,31,.94) 0%, rgba(7,17,31,.68) 48%, rgba(7,17,31,.22) 100%);
+      }
+      .scene-content {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        padding: 120px 150px;
+        gap: 22px;
+      }
+      .signal-map {
+        position: absolute;
+        inset: 110px 140px 110px auto;
+        width: 760px;
+        height: 760px;
+      }
+      .signal-line {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 330px;
+        height: 2px;
+        background: #31c7e8;
+        box-shadow: 0 0 18px rgba(49,199,232,.55);
+        transform-origin: left center;
+      }
+      .signal-line:nth-child(1) { transform: rotate(25deg); }
+      .signal-line:nth-child(2) { transform: rotate(115deg); }
+      .signal-line:nth-child(3) { transform: rotate(205deg); }
+      .signal-line:nth-child(4) { transform: rotate(295deg); }
+      .lock {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 150px;
+        height: 150px;
+        border: 2px solid #f2c14e;
+        transform: translate(-50%, -50%) rotate(45deg);
+      }
+      .eyebrow { color: #9ce8f4; font-size: 28px; font-weight: 700; }
+      h1 { max-width: 850px; margin: 0; font-size: 112px; line-height: 1.05; }
+      .match { color: #f2c14e; font: 800 76px/1 ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+      .summary { max-width: 720px; margin: 0; color: #b8c7d8; font-size: 30px; line-height: 1.55; }
+    </style>
+  </head>
+  <body>
+    <div id="result-reveal-root" data-composition-id="result-reveal" data-width="1920" data-height="1080" data-start="0" data-duration="1.6" data-track-index="0">
+      <img class="documentary-image" src="assets/project-hero.webp" alt="" />
+      <div class="image-shade"></div>
+      <div class="signal-map" aria-hidden="true">
+        <span class="signal-line"></span><span class="signal-line"></span><span class="signal-line"></span><span class="signal-line"></span>
+        <span class="lock"></span>
+      </div>
+      <main class="scene-content">
+        <div class="eyebrow">科创坐标已锁定</div>
+        <h1>项目部</h1>
+        <div class="match">92% MATCH</div>
+        <p class="summary">让项目有人跟、问题有人解、成长看得见。</p>
+      </main>
+      <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+      <script>
+        window.__timelines = window.__timelines || {};
+        gsap.set('.image-shade', { opacity: 0 });
+        const timeline = gsap.timeline({ paused: true });
+        timeline.from('.signal-line', { scaleX: 0, opacity: 0, duration: 0.4, stagger: 0.05, ease: 'power3.out' }, 0.15);
+        timeline.from('.lock', { scale: 0.55, opacity: 0, duration: 0.5, ease: 'back.out(1.5)' }, 0.55);
+        timeline.from('.match', { y: 28, opacity: 0, duration: 0.42, ease: 'expo.out' }, 0.68);
+        timeline.from('.documentary-image', { opacity: 0, scale: 1.05, duration: 0.55, ease: 'power2.out' }, 1.05);
+        timeline.to('.image-shade', { opacity: 1, duration: 0.4, ease: 'sine.out' }, 1.05);
+        timeline.from('.eyebrow', { y: 24, opacity: 0, duration: 0.3, ease: 'power2.out' }, 1.08);
+        timeline.from('h1', { y: 46, opacity: 0, duration: 0.42, ease: 'expo.out' }, 1.12);
+        timeline.from('.summary', { y: 24, opacity: 0, duration: 0.35, ease: 'power3.out' }, 1.2);
+        window.__timelines['result-reveal'] = timeline;
+      </script>
+    </div>
+  </body>
+</html>

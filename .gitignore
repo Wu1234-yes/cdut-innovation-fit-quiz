@@ -1,0 +1,10 @@
+node_modules
+dist
+coverage
+playwright-report
+test-results
+*.local
+qa
+.preview-*.log
+design-research/ppt-media
+design-research/ppt-renders

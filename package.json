@@ -1,0 +1,49 @@
+{
+  "name": "cdut-youth-innovation-fit-assessment",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "packageManager": "pnpm@11.16.0",
+  "scripts": {
+    "assets:departments": "node scripts/prepare-department-assets.mjs",
+    "assets:ip": "node scripts/prepare-ip-assets.mjs",
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "motion:lint": "pnpm dlx hyperframes lint design-research/motion-storyboard && pnpm dlx hyperframes validate design-research/motion-storyboard && pnpm dlx hyperframes inspect design-research/motion-storyboard --samples 6",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "lucide-react": "^1.28.0",
+    "motion": "^13.0.0",
+    "ogl": "^1.0.11",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.62.1",
+    "@testing-library/jest-dom": "^7.0.0",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.3",
+    "@types/node": "^26.1.2",
+    "@types/pngjs": "^6.0.5",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "@vitejs/plugin-react": "^6.0.5",
+    "eslint": "^10.8.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.3",
+    "globals": "^17.9.0",
+    "jsdom": "^30.0.1",
+    "jsqr": "^1.4.0",
+    "pngjs": "^7.0.0",
+    "sharp": "^0.35.3",
+    "typescript": "6.0.3",
+    "typescript-eslint": "^8.66.0",
+    "vite": "^8.2.0",
+    "vitest": "^4.1.10"
+  }
+}
