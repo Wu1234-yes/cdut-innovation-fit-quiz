@@ -26,9 +26,9 @@ describe('questions', () => {
     (question) => question.type === 'scenario',
   )
 
-  it('contains 20 questions split into 12 preference and 8 scenario questions', () => {
-    expect(questions).toHaveLength(20)
-    expect(preferenceQuestions).toHaveLength(12)
+  it('contains 25 questions split into 17 preference and 8 scenario questions', () => {
+    expect(questions).toHaveLength(25)
+    expect(preferenceQuestions).toHaveLength(17)
     expect(scenarioQuestions).toHaveLength(8)
   })
 
@@ -52,7 +52,7 @@ describe('questions', () => {
     }
   })
 
-  it('uses every preference dimension pairing exactly twice', () => {
+  it('uses every preference dimension pairing twice, with five balanced additions', () => {
     expect(
       preferenceQuestions.map((question) =>
         question.options.map((option) => option.dimension).join('-'),
@@ -70,6 +70,11 @@ describe('questions', () => {
       'execution-analysis',
       'adaptation-analysis',
       'adaptation-execution',
+      'expression-analysis',
+      'execution-expression',
+      'adaptation-expression',
+      'analysis-execution',
+      'analysis-adaptation',
     ])
 
     for (const question of preferenceQuestions) {
@@ -94,11 +99,52 @@ describe('questions', () => {
     }
 
     expect(positions).toEqual({
-      expression: { A: 3, B: 3 },
-      analysis: { A: 3, B: 3 },
-      execution: { A: 3, B: 3 },
-      adaptation: { A: 3, B: 3 },
+      expression: { A: 4, B: 5 },
+      analysis: { A: 5, B: 4 },
+      execution: { A: 4, B: 4 },
+      adaptation: { A: 4, B: 4 },
     })
+  })
+
+  it('cannot normalize every dimension to exactly 50', () => {
+    const preferenceAnswers = preferenceQuestions.map((question) => question.id)
+    let hasAllFifty = false
+
+    for (let mask = 0; mask < 2 ** preferenceQuestions.length; mask += 1) {
+      const answers = Object.fromEntries(
+        preferenceQuestions.map((question, index) => [
+          question.id,
+          question.options[(mask >> index) & 1].id,
+        ]),
+      )
+
+      const selectedDimensions = preferenceQuestions.map((question) =>
+        question.options.find((option) => option.id === answers[question.id])!
+          .dimension,
+      )
+      const dimensionCounts = Object.fromEntries(
+        dimensionIds.map((dimensionId) => [
+          dimensionId,
+          selectedDimensions.filter((dimension) => dimension === dimensionId)
+            .length,
+        ]),
+      )
+
+      hasAllFifty = dimensionIds.every(
+        (dimensionId) =>
+          dimensionCounts[dimensionId] * 2 ===
+          preferenceQuestions.filter((question) =>
+            question.options.some((option) => option.dimension === dimensionId),
+          ).length,
+      )
+
+      if (hasAllFifty) {
+        break
+      }
+    }
+
+    expect(preferenceAnswers).toHaveLength(17)
+    expect(hasAllFifty).toBe(false)
   })
 
   it('uses the approved primary and related departments for every scenario', () => {

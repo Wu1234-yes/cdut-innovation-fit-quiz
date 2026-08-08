@@ -279,7 +279,7 @@ describe('RadarHero enhanced radar', () => {
     expect(screen.getByText('锁定坐标')).toBeInTheDocument()
     expect(screen.getByText('SCANNING')).toBeInTheDocument()
     expect(screen.getByText('AXES 04')).toBeInTheDocument()
-    expect(screen.getByText('QUESTIONS 20')).toBeInTheDocument()
+    expect(screen.getByText('QUESTIONS 25')).toBeInTheDocument()
     expect(screen.getByText('LOCAL / NO UPLOAD')).toBeInTheDocument()
     expect(screen.getByText('CHENGDU / 成都')).toBeInTheDocument()
 
@@ -557,7 +557,7 @@ describe('App welcome integration', () => {
     fireEvent.click(start)
 
     await waitFor(() => {
-      expect(screen.getByText('1 / 20')).toBeInTheDocument()
+      expect(screen.getByText('1 / 25')).toBeInTheDocument()
     })
     expect(document.querySelector('canvas')).not.toBeInTheDocument()
   })

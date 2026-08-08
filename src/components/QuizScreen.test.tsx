@@ -6,7 +6,7 @@ import { QuizScreen } from './QuizScreen'
 describe('QuizScreen', () => {
   it('shows the correct stage and keeps native radio behavior', () => {
     const onAnswer = vi.fn()
-    const question = questions[5]
+    const question = questions[6]
 
     render(
       <QuizScreen
@@ -14,7 +14,7 @@ describe('QuizScreen', () => {
         onNext={vi.fn()}
         onPrevious={vi.fn()}
         question={question}
-        questionIndex={5}
+        questionIndex={6}
         selectedOptionId={undefined}
         totalQuestions={questions.length}
       />,

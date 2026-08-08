@@ -54,7 +54,7 @@ describe('appReducer', () => {
   })
 
   it('derives the last question index from the real question bank', () => {
-    expect(questions).toHaveLength(20)
+    expect(questions).toHaveLength(25)
     expect(LAST_QUESTION_INDEX).toBe(questions.length - 1)
   })
 
@@ -130,7 +130,7 @@ describe('appReducer', () => {
     expect(appReducer(answeredState, { type: 'PREVIOUS' })).toBe(answeredState)
   })
 
-  it('cannot leave question 20 with an incomplete answer set', () => {
+  it('cannot leave question 25 with an incomplete answer set', () => {
     const deadEndCandidate: AppState = {
       view: 'quiz',
       questionIndex: LAST_QUESTION_INDEX,

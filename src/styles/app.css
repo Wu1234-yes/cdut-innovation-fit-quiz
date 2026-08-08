@@ -1236,10 +1236,6 @@
     font-size: 0.625rem;
   }
 
-  .radar-hud p:nth-last-child(-n + 2) {
-    display: none;
-  }
-
   .radar-lock {
     top: 35%;
     min-width: 96px;

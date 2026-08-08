@@ -60,17 +60,17 @@ const startAssessment = async (page: Page) => {
   await page.goto('/')
   await page.getByRole('button', { name: '开始扫描' }).click()
   await expect(page.getByTestId('signal-progress')).toBeVisible()
-  await expect(page.getByText('1 / 20')).toBeVisible()
+  await expect(page.getByText('1 / 25')).toBeVisible()
   await assertOptionLayout(page)
   await assertDisabledAdvanceIsMuted(page)
 }
 
 const finishAssessment = async (page: Page, keyboardOnly = false) => {
-  for (let question = 1; question <= 20; question += 1) {
+  for (let question = 1; question <= 25; question += 1) {
     const firstOption = page.getByRole('radio').first()
     const firstOptionRow = page.locator('label.quiz-option').first()
     const advance = page.getByRole('button', {
-      name: question === 20 ? '生成结果' : '下一题',
+      name: question === 25 ? '生成结果' : '下一题',
     })
 
     if (keyboardOnly) {
@@ -95,6 +95,7 @@ test('shows the assessment title on the home page', async ({ page }) => {
   await expect(
     page.getByRole('heading', { name: /科创部门适配测评/ }),
   ).toBeVisible()
+  await expect(page.getByText('30.6799 N / 104.0665 E')).toBeVisible()
   await assertNoHorizontalOverflow(page)
   await assertTouchTargets(page)
 })
@@ -108,7 +109,7 @@ test('restores the current answer after a reload', async ({ page }) => {
   await page.reload()
 
   await expect(page.getByTestId('signal-progress')).toBeVisible()
-  await expect(page.getByText('2 / 20')).toBeVisible()
+  await expect(page.getByText('2 / 25')).toBeVisible()
   await expect(page.getByRole('radio').first()).toBeChecked()
   await assertNoHorizontalOverflow(page)
   await assertTouchTargets(page)

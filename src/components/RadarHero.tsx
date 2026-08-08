@@ -436,7 +436,7 @@ export default function RadarHero({ forceStatic = false, onStart }: RadarHeroPro
         <aside className="radar-hud" aria-label="测评扫描状态">
           <p className="radar-hud__status"><span />SCANNING</p>
           <p>AXES 04</p>
-          <p>QUESTIONS 20</p>
+          <p>QUESTIONS 25</p>
           <p>LOCAL / NO UPLOAD</p>
           <p>CHENGDU / 成都</p>
           <p>30.6799 N / 104.0665 E</p>
@@ -451,7 +451,7 @@ export default function RadarHero({ forceStatic = false, onStart }: RadarHeroPro
           <h2 className="assessment-name">科创部门适配测评</h2>
           <h1>找到与你同频的部门</h1>
           <p className="welcome-lead">
-            用 3 至 4 分钟完成 20 道情境选择，定位更适合你的科创协作方式。
+            用 3 至 4 分钟完成 25 道情境选择，定位更适合你的科创协作方式。
           </p>
           <p className="privacy-note">
             测评匿名进行，答案仅保存在当前标签页，不会上传。

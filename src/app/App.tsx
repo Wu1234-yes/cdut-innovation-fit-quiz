@@ -42,7 +42,7 @@ function WelcomeFallback({ onStart }: { onStart: () => void }) {
         <h2 className="assessment-name">科创部门适配测评</h2>
         <h1>找到与你同频的部门</h1>
         <p className="welcome-lead">
-          用 3 至 4 分钟完成 20 道情境选择，定位更适合你的科创协作方式。
+          用 3 至 4 分钟完成 25 道情境选择，定位更适合你的科创协作方式。
         </p>
         <p className="privacy-note">
           测评匿名进行，答案仅保存在当前标签页，不会上传。

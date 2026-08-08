@@ -164,6 +164,51 @@ export const questions: ReadonlyArray<Question> = [
     ],
   },
   {
+    id: 'p13',
+    type: 'preference',
+    prompt: '当你准备向团队提出一个新想法时，你通常先做什么？',
+    options: [
+      preferenceOption('p13-a', '先把核心想法讲给伙伴听，看看对方能否迅速抓住重点。', 'expression'),
+      preferenceOption('p13-b', '先核对依据和条件，确认这个想法在逻辑上站得住。', 'analysis'),
+    ],
+  },
+  {
+    id: 'p14',
+    type: 'preference',
+    prompt: '接到一项时间较紧但要求还不完全明确的任务时，你更可能怎么开始？',
+    options: [
+      preferenceOption('p14-a', '先列出眼下能确定的事项，边推进边补齐缺失信息。', 'execution'),
+      preferenceOption('p14-b', '先和负责人确认目标与边界，避免大家理解不一致。', 'expression'),
+    ],
+  },
+  {
+    id: 'p15',
+    type: 'preference',
+    prompt: '现场计划临时改变，需要向参与者说明时，你倾向怎么处理？',
+    options: [
+      preferenceOption('p15-a', '先根据现场反应调整安排，再选择合适的说明方式。', 'adaptation'),
+      preferenceOption('p15-b', '先把变化和新的安排讲清楚，让参与者知道接下来怎么做。', 'expression'),
+    ],
+  },
+  {
+    id: 'p16',
+    type: 'preference',
+    prompt: '面对一项需要持续一周推进的任务，你更重视哪一步？',
+    options: [
+      preferenceOption('p16-a', '先梳理前后依赖和可能卡点，确定每一步的先后关系。', 'analysis'),
+      preferenceOption('p16-b', '先明确每天要完成的节点，持续记录并跟进进度。', 'execution'),
+    ],
+  },
+  {
+    id: 'p17',
+    type: 'preference',
+    prompt: '团队成员对同一问题有不同判断时，你更常做什么？',
+    options: [
+      preferenceOption('p17-a', '先比较各自依据，找出分歧落在哪个判断条件上。', 'analysis'),
+      preferenceOption('p17-b', '先换个角度整合意见，根据讨论进展调整解决办法。', 'adaptation'),
+    ],
+  },
+  {
     id: 's01',
     type: 'scenario',
     prompt: '一场大型活动即将启动筹备，你最想承担哪类工作？',

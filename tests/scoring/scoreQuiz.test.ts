@@ -47,6 +47,11 @@ const firstPreferenceAnswers: Answers = {
   p10: 'p10-a',
   p11: 'p11-a',
   p12: 'p12-a',
+  p13: 'p13-a',
+  p14: 'p14-a',
+  p15: 'p15-a',
+  p16: 'p16-a',
+  p17: 'p17-a',
 }
 
 const completeAnswerFixtures: Record<DepartmentId, Answers> = {
@@ -150,8 +155,8 @@ describe('normalization', () => {
     )
 
     expect(normalizeDimensions(answers)).toEqual({
-      expression: 50,
-      analysis: 50,
+      expression: (4 / 9) * 100,
+      analysis: (5 / 9) * 100,
       execution: 50,
       adaptation: 50,
     })

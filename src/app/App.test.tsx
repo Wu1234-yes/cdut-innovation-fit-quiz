@@ -72,7 +72,7 @@ describe('App quiz flow', () => {
     const firstOption = firstQuestion.options[0]
     const firstLegend = screen.getByText(firstQuestion.prompt)
 
-    expect(screen.getByText('1 / 20')).toHaveAttribute('aria-live', 'polite')
+    expect(screen.getByText('1 / 25')).toHaveAttribute('aria-live', 'polite')
     expect(firstLegend).toHaveFocus()
     expect(firstLegend).toHaveAttribute('tabindex', '-1')
     expect(screen.getByRole('button', { name: '上一题' })).toBeDisabled()
@@ -83,13 +83,13 @@ describe('App quiz flow', () => {
 
     await user.click(screen.getByRole('radio', { name: firstOption.label }))
 
-    expect(screen.getByText('1 / 20')).toBeInTheDocument()
+    expect(screen.getByText('1 / 25')).toBeInTheDocument()
     expect(screen.getByRole('radio', { name: firstOption.label })).toBeChecked()
     expect(screen.getByRole('button', { name: '下一题' })).toBeEnabled()
 
     await user.click(screen.getByRole('button', { name: '下一题' }))
     expect(screen.getByText(secondQuestion.prompt)).toHaveFocus()
-    expect(screen.getByText('2 / 20')).toBeInTheDocument()
+    expect(screen.getByText('2 / 25')).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: '上一题' }))
     expect(screen.getByText(firstQuestion.prompt)).toHaveFocus()
@@ -111,7 +111,7 @@ describe('App quiz flow', () => {
 
     render(<App />)
 
-    expect(screen.getByText('2 / 20')).toBeInTheDocument()
+    expect(screen.getByText('2 / 25')).toBeInTheDocument()
     expect(screen.getByText(questions[1].prompt)).toHaveFocus()
     expect(
       screen.getByRole('radio', { name: questions[1].options[0].label }),
@@ -189,12 +189,14 @@ describe('App quiz flow', () => {
     expect(screen.getByRole('status')).toHaveTextContent(/正在生成/)
     expect(readPersistedState().view).toBe('analyzing')
 
+    const expectedProfile = scoreQuiz(completeAnswers).profile
+
     act(() => vi.advanceTimersByTime(1_499))
-    expect(screen.queryByText('科创转译者')).not.toBeInTheDocument()
+    expect(screen.queryByText(expectedProfile)).not.toBeInTheDocument()
 
     act(() => vi.advanceTimersByTime(1))
     const resultHeadings = screen.getAllByRole('heading', {
-      name: '科创转译者',
+      name: expectedProfile,
     })
     expect(resultHeadings).toHaveLength(1)
     expect(resultHeadings[0]).toHaveFocus()
@@ -202,7 +204,7 @@ describe('App quiz flow', () => {
 
     act(() => vi.advanceTimersByTime(1_500))
     expect(
-      screen.getAllByRole('heading', { name: '科创转译者' }),
+      screen.getAllByRole('heading', { name: expectedProfile }),
     ).toHaveLength(1)
 
     fireEvent.click(screen.getByRole('button', { name: '重新测评' }))
@@ -261,7 +263,7 @@ describe('App quiz flow', () => {
     ).toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('button', { name: '开始扫描' }))
-    expect(await screen.findByText('1 / 20')).toBeInTheDocument()
+    expect(await screen.findByText('1 / 25')).toBeInTheDocument()
   })
 
   it('creates a fresh lazy loader attempt when retrying RadarHero', async () => {
