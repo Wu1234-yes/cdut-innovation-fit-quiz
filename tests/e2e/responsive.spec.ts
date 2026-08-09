@@ -139,3 +139,35 @@ for (const viewport of [viewports[0], viewports[3]]) {
     await page.screenshot({ path: testInfo.outputPath(`${viewport.name}-egg.png`) })
   })
 }
+
+test('mobile handoff CTA stays clickable above the orbit visual', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto('/', { waitUntil: 'domcontentloaded' })
+  await openState(page, {
+    ...reportState,
+    view: 'handoff',
+    activeStationId: null,
+    answers: {},
+  })
+
+  await page.getByRole('button', { name: '试试就试试' }).click()
+
+  await expect(page.locator('.station-shell--observation')).toBeVisible()
+})
+
+test('station navigation works before the first answer', async ({ page }) => {
+  await page.goto('/', { waitUntil: 'domcontentloaded' })
+  await openState(page, {
+    ...reportState,
+    view: 'station',
+    activeStationId: 'observation',
+    answers: {},
+  })
+
+  await page.getByRole('button', { name: '返回行动导航' }).click()
+  await expect(page.getByRole('button', { name: '试试就试试' })).toBeVisible()
+
+  await page.getByRole('button', { name: '试试就试试' }).click()
+  await page.getByRole('button', { name: '先看报告' }).click()
+  await expect(page.getByText('一束待显影的行动信号')).toBeVisible()
+})

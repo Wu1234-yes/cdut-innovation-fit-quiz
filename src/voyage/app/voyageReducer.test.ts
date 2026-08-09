@@ -57,15 +57,31 @@ describe('voyageReducer', () => {
     expect(state.answers.experiment).toEqual(answers.experiment)
   })
 
-  it('allows an early report after at least one station', () => {
+  it('allows an early report before the first station has been answered', () => {
     const initial: VoyageState = {
       ...createInitialVoyageState(),
       view: 'station' as const,
-      activeStationId: 'experiment' as const,
-      answers: { observation: answers.observation },
+      activeStationId: 'observation' as const,
     }
     expect(voyageReducer(initial, { type: 'SHOW_REPORT' }).view).toBe('report')
     expect(voyageReducer(createInitialVoyageState(), { type: 'SHOW_REPORT' }).view).toBe('intro')
+  })
+
+  it('returns from a station to the handoff and resumes the first unanswered station', () => {
+    const initial: VoyageState = {
+      ...createInitialVoyageState(),
+      view: 'station',
+      activeStationId: 'experiment',
+      answers: { observation: answers.observation },
+    }
+
+    const handoff = voyageReducer(initial, { type: 'BACK_TO_HANDOFF' })
+    expect(handoff.view).toBe('handoff')
+    expect(handoff.answers.observation).toEqual(answers.observation)
+
+    const resumed = voyageReducer(handoff, { type: 'BEGIN_STATIONS' })
+    expect(resumed.view).toBe('station')
+    expect(resumed.activeStationId).toBe('experiment')
   })
 
   it('returns from an archive to the atlas and can reset', () => {

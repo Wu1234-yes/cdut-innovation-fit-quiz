@@ -79,10 +79,18 @@ export const buildVoyageReport = (
 
   return {
     title: lead.score === null ? '一束待显影的行动信号' : `${lead.label}信号正在靠近`,
-    subtitle: entries.length === 5 ? '这不是结论，是你刚才几次选择留下的航迹。' : '你只试了一站，这份报告先记录已经出现的信号。',
+    subtitle: entries.length === 5
+      ? '这不是结论，是你刚才几次选择留下的航迹。'
+      : entries.length === 0
+        ? '你还没有留下选择，这里先保留一张等待出发的空白航图。'
+        : '你只试了一站，这份报告先记录已经出现的信号。',
     dimensions,
     coreStrength: lead.score === null ? '从一件小事开始，信号才会出现。' : `${dimensionMeta[lead.id].label}：${dimensionMeta[lead.id].evidence}`,
-    nextStep: entries.length < 5 ? '还可以回到下一站，继续看看另一种做法。' : '沿着一个你感兴趣的方向，再看一段真实任务。',
+    nextStep: entries.length === 0
+      ? '回到第一站，随手选一种你当下最想尝试的做法。'
+      : entries.length < 5
+        ? '还可以回到下一站，继续看看另一种做法。'
+        : '沿着一个你感兴趣的方向，再看一段真实任务。',
     directions,
   }
 }

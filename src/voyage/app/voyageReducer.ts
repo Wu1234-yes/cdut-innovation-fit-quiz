@@ -35,6 +35,7 @@ export type VoyageAction =
   | { type: 'COMPLETE_MYTHS' }
   | { type: 'COMPLETE_SCREENING' }
   | { type: 'BEGIN_STATIONS' }
+  | { type: 'BACK_TO_HANDOFF' }
   | { type: 'COMPLETE_STATION'; answer: StationAnswer }
   | { type: 'REDO_STATION'; stationId: StationId }
   | { type: 'SHOW_REPORT' }
@@ -76,8 +77,15 @@ export const voyageReducer = (state: VoyageState, action: VoyageAction): VoyageS
     case 'COMPLETE_SCREENING':
       return state.view === 'screening' ? { ...state, view: 'handoff', screeningAct: 2 } : state
     case 'BEGIN_STATIONS':
-      return state.view === 'handoff'
-        ? { ...state, view: 'station', activeStationId: STATION_ORDER[0] }
+      if (state.view !== 'handoff') return state
+      return {
+        ...state,
+        view: 'station',
+        activeStationId: STATION_ORDER.find((stationId) => !state.answers[stationId]) ?? STATION_ORDER[0],
+      }
+    case 'BACK_TO_HANDOFF':
+      return state.view === 'station'
+        ? { ...state, view: 'handoff', activeStationId: null }
         : state
     case 'COMPLETE_STATION': {
       if (!answerIsForActiveStation(state, action.answer)) return state
@@ -93,7 +101,7 @@ export const voyageReducer = (state: VoyageState, action: VoyageAction): VoyageS
         ? { ...state, view: 'station', activeStationId: action.stationId }
         : state
     case 'SHOW_REPORT':
-      return Object.keys(state.answers).length > 0
+      return state.view === 'station'
         ? { ...state, view: 'report', activeStationId: null }
         : state
     case 'OPEN_ATLAS':

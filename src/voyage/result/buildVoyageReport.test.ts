@@ -29,4 +29,11 @@ describe('buildVoyageReport', () => {
     expect(report.coreStrength).toContain('观察')
     expect(report.directions.every((item) => !/只能|唯一|最适合|适配/.test(item.reason))).toBe(true)
   })
+
+  it('describes a zero-answer report without claiming one station was completed', () => {
+    const report = buildVoyageReport({})
+
+    expect(report.subtitle).toContain('还没有留下选择')
+    expect(report.nextStep).toContain('回到第一站')
+  })
 })

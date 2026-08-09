@@ -31,7 +31,7 @@ export default function App() {
   if (state.view === 'myths') return <MythBreaker onComplete={() => dispatch({ type: 'COMPLETE_MYTHS' })} />
   if (state.view === 'screening') return <VoyageScreeningRoom onBack={() => dispatch({ type: 'RESET' })} onContinue={() => dispatch({ type: 'COMPLETE_SCREENING' })} projects={projects} />
   if (state.view === 'handoff') return <VoyageHandoff onBegin={() => dispatch({ type: 'BEGIN_STATIONS' })} />
-  if (state.view === 'station' && state.activeStationId) return <StationShell answers={state.answers} key={state.activeStationId} onBack={() => dispatch({ type: 'SHOW_REPORT' })} onComplete={(answer) => dispatch({ type: 'COMPLETE_STATION', answer })} onReport={() => dispatch({ type: 'SHOW_REPORT' })} stationId={state.activeStationId} />
+  if (state.view === 'station' && state.activeStationId) return <StationShell answers={state.answers} key={state.activeStationId} onBack={() => dispatch({ type: 'BACK_TO_HANDOFF' })} onComplete={(answer) => dispatch({ type: 'COMPLETE_STATION', answer })} onReport={() => dispatch({ type: 'SHOW_REPORT' })} stationId={state.activeStationId} />
   if (state.view === 'report') return <VoyageReportView onAtlas={() => dispatch({ type: 'OPEN_ATLAS' })} onDepartment={(departmentId) => dispatch({ type: 'OPEN_DEPARTMENT', departmentId })} onEgg={() => dispatch({ type: 'OPEN_EGG' })} onReset={() => dispatch({ type: 'RESET' })} report={report} />
   if (state.view === 'egg') return <SignalAnomaly onBack={() => dispatch({ type: 'CLOSE_EGG' })} />
   if (state.view === 'atlas') return <DepartmentAtlas departments={departmentArchives} onBack={() => dispatch({ type: 'CLOSE_ATLAS' })} onOpenDepartment={(departmentId) => dispatch({ type: 'OPEN_DEPARTMENT', departmentId })} />
