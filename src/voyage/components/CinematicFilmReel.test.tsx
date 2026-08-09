@@ -1,31 +1,101 @@
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import { act, render } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { projects } from '../content/projects'
+import type { ProjectRecord } from '../content/types'
 import { CinematicFilmReel } from './CinematicFilmReel'
+
+const projects: ProjectRecord[] = [
+  {
+    id: 'first',
+    archiveCode: 'FILM 01',
+    title: 'First project',
+    description: 'First description',
+    departmentId: 'project',
+    screeningPriority: 0,
+    media: { src: '/first-640.webp', alt: 'First image', objectPosition: '50% 50%' },
+  },
+  {
+    id: 'second',
+    archiveCode: 'FILM 02',
+    title: 'Second project',
+    description: 'Second description',
+    departmentId: 'publicity',
+    screeningPriority: 1,
+    media: { src: '/second-640.webp', alt: 'Second image', objectPosition: '50% 50%' },
+  },
+]
+
+interface PendingImage {
+  image: {
+    onload: (() => void) | null
+  }
+  resolveDecode: () => void
+}
 
 describe('CinematicFilmReel', () => {
   afterEach(() => {
-    vi.useRealTimers()
+    vi.unstubAllGlobals()
   })
 
-  it('resumes automatically after a touch-style interaction gives the reel focus', () => {
-    vi.useFakeTimers()
-    render(
+  it('keeps the current projection visible until the next image is decoded', async () => {
+    const pendingImages: PendingImage[] = []
+
+    class PreloadImage {
+      onload: (() => void) | null = null
+      onerror: (() => void) | null = null
+      src = ''
+      srcset = ''
+      resolveDecode = () => undefined
+
+      constructor() {
+        pendingImages.push({
+          image: this,
+          resolveDecode: () => this.resolveDecode(),
+        })
+      }
+
+      decode() {
+        return new Promise<void>((resolve) => {
+          this.resolveDecode = resolve
+        })
+      }
+    }
+
+    vi.stubGlobal('Image', PreloadImage)
+
+    const view = render(
       <CinematicFilmReel
         activeIndex={0}
         onActiveChange={vi.fn()}
         projects={projects}
+        reducedMotion
       />,
     )
-    const reel = screen.getByTestId('film-reel')
 
-    fireEvent.pointerDown(reel, { clientX: 120 })
-    fireEvent.focus(reel)
-    expect(reel).toHaveClass('is-paused')
+    const centerImage = () => view.container.querySelector<HTMLImageElement>('.cinematic-film-reel__panel.is-2 img')
+    expect(centerImage()).toHaveAttribute('src', '/first-640.webp')
 
-    fireEvent.pointerUp(reel, { clientX: 120 })
-    act(() => vi.advanceTimersByTime(1_000))
+    view.rerender(
+      <CinematicFilmReel
+        activeIndex={1}
+        onActiveChange={vi.fn()}
+        projects={projects}
+        reducedMotion
+      />,
+    )
 
-    expect(reel).not.toHaveClass('is-paused')
+    expect(centerImage()).toHaveAttribute('src', '/first-640.webp')
+    expect(pendingImages).toHaveLength(1)
+
+    await act(async () => {
+      pendingImages[0].image.onload?.()
+      await Promise.resolve()
+    })
+    expect(centerImage()).toHaveAttribute('src', '/first-640.webp')
+
+    await act(async () => {
+      pendingImages[0].resolveDecode()
+      await Promise.resolve()
+    })
+    expect(centerImage()).toHaveAttribute('src', '/second-640.webp')
   })
 })

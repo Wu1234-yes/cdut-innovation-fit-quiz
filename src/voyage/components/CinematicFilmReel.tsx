@@ -25,10 +25,50 @@ export function CinematicFilmReel({
   reducedMotion = false,
 }: CinematicFilmReelProps) {
   const [paused, setPaused] = useState(false)
+  const [displayIndex, setDisplayIndex] = useState(activeIndex)
   const pointerStartRef = useRef<number | null>(null)
   const resumeTimerRef = useRef<number | null>(null)
-  const project = projects[activeIndex]
+  const project = projects[displayIndex] ?? projects[activeIndex]
   const railProjects = [...projects, ...projects]
+
+  useEffect(() => {
+    if (activeIndex === displayIndex) return
+    const target = projects[activeIndex]
+    if (!target) return
+    if (target.media.src === project.media.src) {
+      setDisplayIndex(activeIndex)
+      return
+    }
+
+    let cancelled = false
+    const preload = new Image()
+    preload.decoding = 'async'
+    preload.fetchPriority = 'high'
+    preload.sizes = '(max-width: 720px) 100vw, 900px'
+    if (target.media.srcSet) preload.srcset = target.media.srcSet
+
+    const promote = async () => {
+      try {
+        await preload.decode()
+      } catch {
+        // A completed load is still usable when decode() is unsupported.
+      }
+      if (!cancelled) setDisplayIndex(activeIndex)
+    }
+
+    preload.onload = () => void promote()
+    preload.onerror = () => {
+      if (!cancelled) setDisplayIndex(activeIndex)
+    }
+    preload.src = target.media.src
+    if (preload.complete && preload.naturalWidth > 0) void promote()
+
+    return () => {
+      cancelled = true
+      preload.onload = null
+      preload.onerror = null
+    }
+  }, [activeIndex, displayIndex, project.media.src, projects])
 
   useEffect(() => {
     if (paused || reducedMotion || projects.length < 2) return
