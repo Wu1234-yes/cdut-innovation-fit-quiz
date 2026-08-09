@@ -10,6 +10,7 @@ afterEach(() => {
 
 describe('StationShell', () => {
   it('prefetches only the next station background', () => {
+    vi.useFakeTimers()
     const view = render(
       <StationShell
         answers={{}}
@@ -21,8 +22,12 @@ describe('StationShell', () => {
     )
 
     const prefetches = document.head.querySelectorAll<HTMLLinkElement>('link[data-voyage-prefetch="next-station"]')
-    expect(prefetches).toHaveLength(1)
-    expect(prefetches[0].href).toContain('/media/night-voyage/reference-fluid-motion-desktop.mp4')
+    expect(prefetches).toHaveLength(0)
+
+    act(() => vi.advanceTimersByTime(2_500))
+    const delayedPrefetches = document.head.querySelectorAll<HTMLLinkElement>('link[data-voyage-prefetch="next-station"]')
+    expect(delayedPrefetches).toHaveLength(1)
+    expect(delayedPrefetches[0].href).toContain('/media/night-voyage/reference-fluid-motion-desktop.mp4')
 
     view.rerender(
       <StationShell

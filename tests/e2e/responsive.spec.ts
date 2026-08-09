@@ -172,6 +172,66 @@ test('station navigation works before the first answer', async ({ page }) => {
   await expect(page.getByText('一束待显影的行动信号')).toBeVisible()
 })
 
+test('mobile backdrop retries playback after the next touch', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'mobile-390x844')
+  let releaseVideo: () => void = () => {}
+  let videoRequested = false
+  const videoGate = new Promise<void>((resolve) => {
+    releaseVideo = resolve
+  })
+  await page.route('**/reference-motion13-mobile.mp4*', async (route) => {
+    videoRequested = true
+    await videoGate
+    await route.continue()
+  })
+  await page.addInitScript(() => {
+    const originalPlay = HTMLMediaElement.prototype.play
+    const playbackState = { allow: false, calls: 0 }
+    Object.defineProperty(window, '__voyagePlaybackState', { value: playbackState })
+    HTMLMediaElement.prototype.play = function playWithInitialBlock() {
+      playbackState.calls += 1
+      if (this.closest('.cinematic-backdrop') && !playbackState.allow) {
+        return Promise.reject(new DOMException('blocked', 'NotAllowedError'))
+      }
+      return originalPlay.call(this)
+    }
+  })
+  await page.addInitScript(
+    ({ key, nextState }) => {
+      sessionStorage.setItem(key, JSON.stringify({ version: 1, state: nextState }))
+    },
+    {
+      key: sessionKey,
+      nextState: {
+        ...reportState,
+        view: 'station',
+        activeStationId: 'observation',
+        answers: {},
+      },
+    },
+  )
+
+  await page.goto('/', { waitUntil: 'domcontentloaded' })
+
+  const backdrop = page.locator('.cinematic-backdrop')
+  const video = backdrop.locator('video')
+  await expect(backdrop).toHaveClass(/is-loading/)
+  await expect.poll(() => videoRequested).toBe(true)
+  await page.evaluate(() => {
+    ;(window as unknown as { __voyagePlaybackState: { allow: boolean; calls: number } }).__voyagePlaybackState.allow = true
+  })
+  await page.touchscreen.tap(24, 180)
+  await expect.poll(() => page.evaluate(() => (
+    window as unknown as { __voyagePlaybackState: { calls: number } }
+  ).__voyagePlaybackState.calls)).toBeGreaterThanOrEqual(2)
+  releaseVideo()
+
+  await expect(backdrop).toHaveClass(/is-ready/, { timeout: 10_000 })
+  const firstTime = await video.evaluate((element) => (element as HTMLVideoElement).currentTime)
+  await page.waitForTimeout(500)
+  await expect.poll(() => video.evaluate((element) => (element as HTMLVideoElement).currentTime)).toBeGreaterThan(firstTime)
+})
+
 test('mobile film reel resumes rolling after a touch', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'mobile-390x844')
   await page.goto('/', { waitUntil: 'domcontentloaded' })

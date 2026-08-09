@@ -19,16 +19,22 @@ export function StationShell({ stationId, answers, onComplete, onBack, onReport 
     const nextStation = stations[stationIndex + 1]
     if (!nextStation) return
 
-    const isMobile = window.matchMedia?.('(max-width: 680px)').matches ?? false
-    const link = document.createElement('link')
-    link.rel = 'prefetch'
-    link.as = 'video'
-    link.type = 'video/mp4'
-    link.href = isMobile ? nextStation.mobileVideo : nextStation.video
-    link.dataset.voyagePrefetch = 'next-station'
-    document.head.append(link)
+    let link: HTMLLinkElement | null = null
+    const prefetchTimer = window.setTimeout(() => {
+      const isMobile = window.matchMedia?.('(max-width: 680px)').matches ?? false
+      link = document.createElement('link')
+      link.rel = 'prefetch'
+      link.as = 'video'
+      link.type = 'video/mp4'
+      link.href = isMobile ? nextStation.mobileVideo : nextStation.video
+      link.dataset.voyagePrefetch = 'next-station'
+      document.head.append(link)
+    }, 2_500)
 
-    return () => link.remove()
+    return () => {
+      window.clearTimeout(prefetchTimer)
+      link?.remove()
+    }
   }, [stationId])
 
   return (

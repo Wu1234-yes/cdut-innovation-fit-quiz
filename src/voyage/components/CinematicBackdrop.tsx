@@ -48,6 +48,7 @@ function BackdropMedia({
 }: BackdropMediaProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const hasPlayedRef = useRef(false)
+  const lastInteractionRetryRef = useRef(Number.NEGATIVE_INFINITY)
   const retryTimerRef = useRef<number | null>(null)
   const [attempt, setAttempt] = useState(0)
   const [ready, setReady] = useState(false)
@@ -61,6 +62,25 @@ function BackdropMedia({
     if (!video || !showVideo) return
     attemptPlayback(video, () => setReady(false))
   }, [resolvedVideoSrc, showVideo])
+
+  useEffect(() => {
+    if (!showVideo) return
+
+    const retryBlockedPlayback = () => {
+      const video = videoRef.current
+      const now = Date.now()
+      if (!video || !video.paused || now - lastInteractionRetryRef.current < 250) return
+      lastInteractionRetryRef.current = now
+      attemptPlayback(video, () => setReady(false))
+    }
+
+    document.addEventListener('pointerdown', retryBlockedPlayback, { capture: true, passive: true })
+    document.addEventListener('touchstart', retryBlockedPlayback, { capture: true, passive: true })
+    return () => {
+      document.removeEventListener('pointerdown', retryBlockedPlayback, true)
+      document.removeEventListener('touchstart', retryBlockedPlayback, true)
+    }
+  }, [showVideo])
 
   useEffect(() => {
     const handleVisibility = () => {
@@ -128,7 +148,6 @@ function BackdropMedia({
           loop
           muted
           onError={handleMediaError}
-          onLoadedData={() => setReady(true)}
           onCanPlay={(event) => attemptPlayback(event.currentTarget, () => setReady(false))}
           onPlaying={() => {
             hasPlayedRef.current = true
