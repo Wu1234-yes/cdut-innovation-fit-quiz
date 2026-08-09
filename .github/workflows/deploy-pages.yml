@@ -49,7 +49,7 @@ jobs:
 
       - name: Build site
         env:
-          VITE_BASE_PATH: /
+          VITE_BASE_PATH: /cdut-innovation-fit-quiz/
         run: pnpm build
 
       - name: Upload Pages artifact
