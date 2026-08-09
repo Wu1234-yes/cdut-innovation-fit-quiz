@@ -1,5 +1,5 @@
 import { ArrowLeft, ArrowRight, RotateCcw, Sparkles } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { CSSProperties } from 'react'
 import { stations, toStationAnswer, type StationDefinition } from '../content/journey'
 import type { StationAnswer, StationId } from '../app/voyageReducer'
@@ -13,6 +13,24 @@ export function StationShell({ stationId, answers, onComplete, onBack, onReport 
   const [confirmed, setConfirmed] = useState(false)
   const choice = station.choices.find((item) => item.id === choiceId)
   const confirm = () => { if (!choice) return; setConfirmed(true); window.setTimeout(() => onComplete(toStationAnswer(station, choice)), 430) }
+
+  useEffect(() => {
+    const stationIndex = stations.findIndex((item) => item.id === stationId)
+    const nextStation = stations[stationIndex + 1]
+    if (!nextStation) return
+
+    const isMobile = window.matchMedia?.('(max-width: 680px)').matches ?? false
+    const link = document.createElement('link')
+    link.rel = 'prefetch'
+    link.as = 'video'
+    link.type = 'video/mp4'
+    link.href = isMobile ? nextStation.mobileVideo : nextStation.video
+    link.dataset.voyagePrefetch = 'next-station'
+    document.head.append(link)
+
+    return () => link.remove()
+  }, [stationId])
+
   return (
     <main className={`station-shell station-shell--${station.id}`} style={{ '--station-accent': station.accent } as CSSProperties}>
       <CinematicBackdrop alt={station.title} desktopVideoSrc={station.video} mobileVideoSrc={station.mobileVideo} posterSrc={station.poster} />

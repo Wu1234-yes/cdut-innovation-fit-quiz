@@ -17,10 +17,13 @@
 .cinematic-backdrop::after { content: ''; position: absolute; z-index: 2; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(3,7,13,.94), rgba(3,7,13,.48) 46%, rgba(3,7,13,.2)), linear-gradient(0deg, rgba(3,7,13,.9), transparent 46%); }
 .cinematic-backdrop picture, .cinematic-backdrop video { position: absolute; inset: 0; width: 100%; height: 100%; }
 .cinematic-backdrop picture { z-index: 0; }
+.cinematic-backdrop picture img { animation: backdrop-poster-drift 12s ease-in-out infinite alternate; transform-origin: 54% 48%; }
+.cinematic-backdrop.is-ready picture img { animation-play-state: paused; }
 .cinematic-backdrop video { z-index: 1; opacity: 0; transition: opacity 320ms ease; }
 .cinematic-backdrop.is-ready video { opacity: 1; }
 .cinematic-backdrop video, .cinematic-backdrop img { width: 100%; height: 100%; object-fit: cover; object-position: var(--backdrop-focal-point, 50% 50%); filter: saturate(.82) contrast(1.08) brightness(.65); }
 .cinematic-backdrop.is-poster img { display: block; }
+@keyframes backdrop-poster-drift { from { transform: scale(1.01) translate3d(0, 0, 0); } to { transform: scale(1.045) translate3d(-.6%, -.35%, 0); } }
 .new-voyage-intro__grain { position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: .18; background-image: radial-gradient(rgba(255,255,255,.7) .7px, transparent .8px); background-size: 13px 13px; mix-blend-mode: screen; }
 .voyage-topbar { width: min(100% - 48px, 1320px); min-height: 74px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 20px; position: relative; z-index: 4; border-bottom: 1px solid rgba(173,211,224,.17); }
 .voyage-mark, .voyage-topbar__status, .voyage-eyebrow, .myth-card__index, .myth-card__evidence, .voyage-report__section-heading span, .signal-anomaly__code { display: inline-flex; align-items: center; gap: 8px; color: var(--night-cyan); font: 700 11px/1.2 "Arial Narrow", Arial, sans-serif; letter-spacing: .12em; }
@@ -159,5 +162,5 @@
   .voyage-handoff__orbit { right: -300px; width: 520px; opacity: .38; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .voyage-cta, .myth-card, .station-shell__choices button, .route-signal, .signal-anomaly__signals button { transition: none; }.action-star-map__signal, .station-shell__signal-line i, .signal-anomaly__scan, .signal-anomaly__spin svg, .signal-anomaly__signals i, .station-shell__choices button.is-selected::before { animation: none; }.is-launched .new-voyage-intro__copy, .is-launched .new-voyage-intro__companion { animation: none; }
+  .voyage-cta, .myth-card, .station-shell__choices button, .route-signal, .signal-anomaly__signals button { transition: none; }.cinematic-backdrop picture img, .action-star-map__signal, .station-shell__signal-line i, .signal-anomaly__scan, .signal-anomaly__spin svg, .signal-anomaly__signals i, .station-shell__choices button.is-selected::before { animation: none; }.is-launched .new-voyage-intro__copy, .is-launched .new-voyage-intro__companion { animation: none; }
 }

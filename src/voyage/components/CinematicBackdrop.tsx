@@ -47,6 +47,7 @@ function BackdropMedia({
   videoSrc,
 }: BackdropMediaProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
+  const hasPlayedRef = useRef(false)
   const retryTimerRef = useRef<number | null>(null)
   const [attempt, setAttempt] = useState(0)
   const [ready, setReady] = useState(false)
@@ -129,8 +130,13 @@ function BackdropMedia({
           onError={handleMediaError}
           onLoadedData={() => setReady(true)}
           onCanPlay={(event) => attemptPlayback(event.currentTarget, () => setReady(false))}
-          onPlaying={() => setReady(true)}
-          onStalled={() => setReady(false)}
+          onPlaying={() => {
+            hasPlayedRef.current = true
+            setReady(true)
+          }}
+          onStalled={() => {
+            if (!hasPlayedRef.current) setReady(false)
+          }}
           playsInline
           poster={posterSrc}
           preload="auto"

@@ -1,4 +1,4 @@
-import { render, waitFor } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { CinematicBackdrop } from './CinematicBackdrop'
 
@@ -36,5 +36,25 @@ describe('CinematicBackdrop', () => {
     await waitFor(() => expect(HTMLMediaElement.prototype.play).toHaveBeenCalled())
     expect(container.querySelector('video')).toBeInTheDocument()
     expect(container.querySelector('.cinematic-backdrop')).not.toHaveClass('is-poster')
+  })
+
+  it('keeps an already playing frame visible during a transient stall', () => {
+    vi.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue()
+    const { container } = render(
+      <CinematicBackdrop
+        alt="测试背景"
+        desktopVideoSrc="/background.mp4"
+        mobileVideoSrc="/background-mobile.mp4"
+        posterSrc="/background.jpg"
+      />,
+    )
+    const video = container.querySelector('video') as HTMLVideoElement
+    const backdrop = container.querySelector('.cinematic-backdrop')
+
+    fireEvent.playing(video)
+    expect(backdrop).toHaveClass('is-ready')
+
+    fireEvent.stalled(video)
+    expect(backdrop).toHaveClass('is-ready')
   })
 })
