@@ -14,7 +14,11 @@
 }
 
 .cinematic-backdrop { position: absolute; z-index: -3; inset: 0; overflow: hidden; background: #050a12; }
-.cinematic-backdrop::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(3,7,13,.94), rgba(3,7,13,.48) 46%, rgba(3,7,13,.2)), linear-gradient(0deg, rgba(3,7,13,.9), transparent 46%); }
+.cinematic-backdrop::after { content: ''; position: absolute; z-index: 2; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(3,7,13,.94), rgba(3,7,13,.48) 46%, rgba(3,7,13,.2)), linear-gradient(0deg, rgba(3,7,13,.9), transparent 46%); }
+.cinematic-backdrop picture, .cinematic-backdrop video { position: absolute; inset: 0; width: 100%; height: 100%; }
+.cinematic-backdrop picture { z-index: 0; }
+.cinematic-backdrop video { z-index: 1; opacity: 0; transition: opacity 320ms ease; }
+.cinematic-backdrop.is-ready video { opacity: 1; }
 .cinematic-backdrop video, .cinematic-backdrop img { width: 100%; height: 100%; object-fit: cover; object-position: var(--backdrop-focal-point, 50% 50%); filter: saturate(.82) contrast(1.08) brightness(.65); }
 .cinematic-backdrop.is-poster img { display: block; }
 .new-voyage-intro__grain { position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: .18; background-image: radial-gradient(rgba(255,255,255,.7) .7px, transparent .8px); background-size: 13px 13px; mix-blend-mode: screen; }

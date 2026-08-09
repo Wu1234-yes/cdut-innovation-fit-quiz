@@ -23,6 +23,125 @@ const attemptPlayback = (video: HTMLVideoElement, onFailure: () => void) => {
   }
 }
 
+const retrySource = (source: string, attempt: number) => {
+  if (attempt === 0) return source
+  const separator = source.includes('?') ? '&' : '?'
+  return `${source}${separator}media_retry=${attempt}`
+}
+
+interface BackdropMediaProps {
+  alt: string
+  className: string
+  focalPoint: string
+  posterSrc: string
+  reducedMotion: boolean
+  videoSrc?: string
+}
+
+function BackdropMedia({
+  alt,
+  className,
+  focalPoint,
+  posterSrc,
+  reducedMotion,
+  videoSrc,
+}: BackdropMediaProps) {
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const retryTimerRef = useRef<number | null>(null)
+  const [attempt, setAttempt] = useState(0)
+  const [ready, setReady] = useState(false)
+  const [retrying, setRetrying] = useState(false)
+  const [exhausted, setExhausted] = useState(false)
+  const showVideo = Boolean(videoSrc) && !reducedMotion && !retrying && !exhausted
+  const resolvedVideoSrc = videoSrc ? retrySource(videoSrc, attempt) : undefined
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video || !showVideo) return
+    attemptPlayback(video, () => setReady(false))
+  }, [resolvedVideoSrc, showVideo])
+
+  useEffect(() => {
+    const handleVisibility = () => {
+      const video = videoRef.current
+      if (!video) return
+      if (document.hidden) video.pause()
+      else attemptPlayback(video, () => setReady(false))
+    }
+
+    document.addEventListener('visibilitychange', handleVisibility)
+    return () => document.removeEventListener('visibilitychange', handleVisibility)
+  }, [showVideo])
+
+  useEffect(() => {
+    const retryOnReconnect = () => {
+      if (retryTimerRef.current !== null) {
+        window.clearTimeout(retryTimerRef.current)
+        retryTimerRef.current = null
+      }
+      setExhausted(false)
+      setRetrying(false)
+      setReady(false)
+      setAttempt((value) => value + 1)
+    }
+
+    window.addEventListener('online', retryOnReconnect)
+    return () => {
+      window.removeEventListener('online', retryOnReconnect)
+      if (retryTimerRef.current !== null) window.clearTimeout(retryTimerRef.current)
+    }
+  }, [])
+
+  const handleMediaError = () => {
+    setReady(false)
+    if (attempt >= 2) {
+      setExhausted(true)
+      return
+    }
+    setRetrying(true)
+    retryTimerRef.current = window.setTimeout(() => {
+      setAttempt((value) => value + 1)
+      setRetrying(false)
+      retryTimerRef.current = null
+    }, 600 * (attempt + 1))
+  }
+
+  const style: BackdropStyle = {
+    '--backdrop-focal-point': focalPoint,
+  }
+
+  return (
+    <div
+      aria-label={alt}
+      className={`cinematic-backdrop ${showVideo ? 'is-video' : 'is-poster'} ${ready ? 'is-ready' : 'is-loading'} ${className}`.trim()}
+      role="img"
+      style={style}
+    >
+      <picture aria-hidden="true">
+        <img alt="" decoding="async" src={posterSrc} />
+      </picture>
+      {showVideo ? (
+        <video
+          autoPlay
+          key={resolvedVideoSrc}
+          loop
+          muted
+          onError={handleMediaError}
+          onLoadedData={() => setReady(true)}
+          onCanPlay={(event) => attemptPlayback(event.currentTarget, () => setReady(false))}
+          onPlaying={() => setReady(true)}
+          onStalled={() => setReady(false)}
+          playsInline
+          poster={posterSrc}
+          preload="auto"
+          ref={videoRef}
+          src={resolvedVideoSrc}
+        />
+      ) : null}
+    </div>
+  )
+}
+
 export function CinematicBackdrop({
   alt,
   posterSrc,
@@ -34,21 +153,17 @@ export function CinematicBackdrop({
   reducedMotion = false,
   className = '',
 }: CinematicBackdropProps) {
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const [failed, setFailed] = useState(false)
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== 'undefined' && window.matchMedia?.('(max-width: 680px)').matches,
   )
   const activeVideoSrc = videoSrc ?? (isMobile ? mobileVideoSrc : desktopVideoSrc ?? mobileVideoSrc)
   const activePosterSrc = isMobile ? mobilePosterSrc ?? posterSrc : posterSrc
-  const showVideo = Boolean(activeVideoSrc) && !reducedMotion && !failed
 
   useEffect(() => {
     const mediaQuery = window.matchMedia?.('(max-width: 680px)')
     if (!mediaQuery) return
 
     const handleViewportChange = () => {
-      setFailed(false)
       setIsMobile(mediaQuery.matches)
     }
 
@@ -56,60 +171,5 @@ export function CinematicBackdrop({
     return () => mediaQuery.removeEventListener?.('change', handleViewportChange)
   }, [])
 
-  useEffect(() => {
-    const video = videoRef.current
-    if (!video || !showVideo) return
-
-    attemptPlayback(video, () => setFailed(true))
-  }, [activeVideoSrc, showVideo])
-
-  useEffect(() => {
-    const handleVisibility = () => {
-      const video = videoRef.current
-      if (!video) return
-      if (document.hidden) {
-        video.pause()
-      } else {
-        attemptPlayback(video, () => setFailed(true))
-      }
-    }
-
-    document.addEventListener('visibilitychange', handleVisibility)
-    return () => document.removeEventListener('visibilitychange', handleVisibility)
-  }, [showVideo])
-
-  const style: BackdropStyle = {
-    '--backdrop-focal-point': focalPoint,
-  }
-
-  return (
-    <div
-      aria-label={alt}
-      className={`cinematic-backdrop ${showVideo ? 'is-video' : 'is-poster'} ${className}`.trim()}
-      role="img"
-      style={style}
-    >
-      {showVideo ? (
-        <video
-          autoPlay
-          key={activeVideoSrc}
-          loop
-          muted
-          onError={() => setFailed(true)}
-          onLoadedData={() => setFailed(false)}
-          onCanPlay={(event) => attemptPlayback(event.currentTarget, () => setFailed(true))}
-          playsInline
-          poster={activePosterSrc}
-          preload="auto"
-          ref={videoRef}
-          src={activeVideoSrc}
-        />
-      ) : (
-        <picture>
-          {mobilePosterSrc && <source media="(max-width: 680px)" srcSet={mobilePosterSrc} />}
-          <img alt={alt} decoding="async" src={posterSrc} />
-        </picture>
-      )}
-    </div>
-  )
+  return <BackdropMedia alt={alt} className={className} focalPoint={focalPoint} key={`${activeVideoSrc ?? 'poster'}|${activePosterSrc}|${reducedMotion}`} posterSrc={activePosterSrc} reducedMotion={reducedMotion} videoSrc={activeVideoSrc} />
 }

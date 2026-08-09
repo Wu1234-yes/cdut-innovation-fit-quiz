@@ -189,3 +189,34 @@ test('mobile film reel resumes rolling after a touch', async ({ page }, testInfo
   expect(transformAfter).not.toBe(transformBefore)
   await expect(page.locator('.voyage-screening__dots button').nth(1)).toHaveClass(/is-active/, { timeout: 6_000 })
 })
+
+test('mobile screening media recovers from transient request failures', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'mobile-390x844')
+  let videoFailedOnce = false
+  let imageFailedOnce = false
+
+  await page.route('**/*', async (route) => {
+    const url = route.request().url()
+    if (!videoFailedOnce && url.includes('reference-background1-mobile.mp4')) {
+      videoFailedOnce = true
+      await route.abort('failed')
+      return
+    }
+    if (!imageFailedOnce && url.includes('/departments/project/gallery-1-640.webp')) {
+      imageFailedOnce = true
+      await route.abort('failed')
+      return
+    }
+    await route.continue()
+  })
+
+  await page.goto('/', { waitUntil: 'domcontentloaded' })
+  await openState(page, { ...reportState, view: 'screening', screeningAct: 0 })
+  const backdrop = page.locator('.cinematic-backdrop')
+  const centerImage = page.locator('.cinematic-film-reel__panel.is-2 img')
+
+  await expect(backdrop).toHaveClass(/is-ready/, { timeout: 15_000 })
+  await expect(page.locator('.cinematic-backdrop video')).toHaveAttribute('src', /media_retry=1/)
+  await expect(centerImage).toHaveAttribute('src', /media_retry=1/)
+  await expect.poll(() => centerImage.evaluate((image) => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0)
+})

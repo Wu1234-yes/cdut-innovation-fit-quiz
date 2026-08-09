@@ -12,6 +12,12 @@ interface CinematicFilmReelProps {
 const normalizeIndex = (index: number, length: number) =>
   (index + length) % length
 
+const thumbnailMedia = (project: ProjectRecord) => ({
+  ...project.media,
+  src: project.media.src.replace(/-640\.webp$/, '-320.webp'),
+  srcSet: undefined,
+})
+
 export function CinematicFilmReel({
   projects,
   activeIndex,
@@ -107,7 +113,8 @@ export function CinematicFilmReel({
             <figure key={`${item.id}-top-${index}`}>
               <MediaWithFallback
                 archiveCode={item.archiveCode}
-                media={{ ...item.media, alt: '' }}
+                eager={index < 4}
+                media={{ ...thumbnailMedia(item), alt: '' }}
                 title={item.title}
               />
             </figure>
@@ -122,6 +129,8 @@ export function CinematicFilmReel({
             <div className={`cinematic-film-reel__panel is-${panel + 1}`} data-testid="projection-panel" key={panel}>
               <MediaWithFallback
                 archiveCode={project.archiveCode}
+                eager
+                fetchPriority={panel === 1 ? 'high' : 'auto'}
                 media={{ ...project.media, alt: panel === 1 ? project.media.alt : '' }}
                 title={project.title}
               />
@@ -137,7 +146,7 @@ export function CinematicFilmReel({
             <figure key={`${item.id}-bottom-${index}`}>
               <MediaWithFallback
                 archiveCode={item.archiveCode}
-                media={{ ...item.media, alt: '' }}
+                media={{ ...thumbnailMedia(item), alt: '' }}
                 title={item.title}
               />
             </figure>
