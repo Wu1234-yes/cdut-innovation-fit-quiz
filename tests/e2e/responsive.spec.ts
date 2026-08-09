@@ -220,3 +220,31 @@ test('mobile screening media recovers from transient request failures', async ({
   await expect(centerImage).toHaveAttribute('src', /media_retry=1/)
   await expect.poll(() => centerImage.evaluate((image) => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0)
 })
+
+test('mobile screening keeps the previous projection while the next image loads', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'mobile-390x844')
+  let releaseNextImage = () => undefined
+  let nextImageRequested = false
+  const nextImageGate = new Promise<void>((resolve) => {
+    releaseNextImage = resolve
+  })
+
+  await page.route('**/departments/science/gallery-1-640.webp*', async (route) => {
+    nextImageRequested = true
+    await nextImageGate
+    await route.continue()
+  })
+
+  await page.goto('/', { waitUntil: 'domcontentloaded' })
+  await openState(page, { ...reportState, view: 'screening', screeningAct: 0 })
+  const centerImage = page.locator('.cinematic-film-reel__panel.is-2 img')
+  await expect(centerImage).toHaveAttribute('src', /departments\/project\/gallery-1-640\.webp/)
+
+  await page.locator('.voyage-screening__controls > .icon-button').nth(1).click()
+  await page.locator('.voyage-screening__dots button').nth(1).click()
+  await expect.poll(() => nextImageRequested).toBe(true)
+  await expect(centerImage).toHaveAttribute('src', /departments\/project\/gallery-1-640\.webp/)
+
+  releaseNextImage()
+  await expect(centerImage).toHaveAttribute('src', /departments\/science\/gallery-1-640\.webp/)
+})
