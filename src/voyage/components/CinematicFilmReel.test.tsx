@@ -44,7 +44,7 @@ describe('CinematicFilmReel', () => {
       onerror: (() => void) | null = null
       src = ''
       srcset = ''
-      resolveDecode = () => undefined
+      resolveDecode: () => void = () => {}
 
       constructor() {
         pendingImages.push({

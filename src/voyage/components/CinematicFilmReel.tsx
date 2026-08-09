@@ -35,10 +35,6 @@ export function CinematicFilmReel({
     if (activeIndex === displayIndex) return
     const target = projects[activeIndex]
     if (!target) return
-    if (target.media.src === project.media.src) {
-      setDisplayIndex(activeIndex)
-      return
-    }
 
     let cancelled = false
     const preload = new Image()

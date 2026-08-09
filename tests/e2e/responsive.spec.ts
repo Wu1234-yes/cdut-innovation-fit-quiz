@@ -223,7 +223,7 @@ test('mobile screening media recovers from transient request failures', async ({
 
 test('mobile screening keeps the previous projection while the next image loads', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'mobile-390x844')
-  let releaseNextImage = () => undefined
+  let releaseNextImage: () => void = () => {}
   let nextImageRequested = false
   const nextImageGate = new Promise<void>((resolve) => {
     releaseNextImage = resolve
