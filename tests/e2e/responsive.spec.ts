@@ -171,3 +171,21 @@ test('station navigation works before the first answer', async ({ page }) => {
   await page.getByRole('button', { name: '先看报告' }).click()
   await expect(page.getByText('一束待显影的行动信号')).toBeVisible()
 })
+
+test('mobile film reel resumes rolling after a touch', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'mobile-390x844')
+  await page.goto('/', { waitUntil: 'domcontentloaded' })
+  await openState(page, { ...reportState, view: 'screening', screeningAct: 0 })
+  const reel = page.locator('.cinematic-film-reel')
+  const rail = page.locator('.cinematic-film-reel__rail--top > div')
+
+  await reel.tap()
+  await expect(reel).toHaveClass(/is-paused/)
+  await expect(reel).not.toHaveClass(/is-paused/, { timeout: 2_000 })
+  const transformBefore = await rail.evaluate((element) => getComputedStyle(element).transform)
+  await page.waitForTimeout(500)
+  const transformAfter = await rail.evaluate((element) => getComputedStyle(element).transform)
+
+  expect(transformAfter).not.toBe(transformBefore)
+  await expect(page.locator('.voyage-screening__dots button').nth(1)).toHaveClass(/is-active/, { timeout: 6_000 })
+})

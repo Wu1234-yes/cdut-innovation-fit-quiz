@@ -20,7 +20,6 @@ export function CinematicFilmReel({
 }: CinematicFilmReelProps) {
   const [paused, setPaused] = useState(false)
   const pointerStartRef = useRef<number | null>(null)
-  const focusedRef = useRef(false)
   const resumeTimerRef = useRef<number | null>(null)
   const project = projects[activeIndex]
   const railProjects = [...projects, ...projects]
@@ -41,7 +40,7 @@ export function CinematicFilmReel({
           resumeTimerRef.current = null
         }
         setPaused(true)
-      } else if (!focusedRef.current && pointerStartRef.current === null) {
+      } else if (pointerStartRef.current === null) {
         resumeTimerRef.current = window.setTimeout(
           () => setPaused(false),
           reducedMotion ? 0 : 900,
@@ -71,7 +70,7 @@ export function CinematicFilmReel({
       window.clearTimeout(resumeTimerRef.current)
     }
     resumeTimerRef.current = window.setTimeout(() => {
-      if (!focusedRef.current && pointerStartRef.current === null && !document.hidden) {
+      if (pointerStartRef.current === null && !document.hidden) {
         setPaused(false)
       }
       resumeTimerRef.current = null
@@ -92,14 +91,6 @@ export function CinematicFilmReel({
     <div
       className={`cinematic-film-reel ${paused ? 'is-paused' : ''} ${reducedMotion ? 'is-reduced' : ''}`.trim()}
       data-testid="film-reel"
-      onBlur={() => {
-        focusedRef.current = false
-        scheduleResume()
-      }}
-      onFocus={() => {
-        focusedRef.current = true
-        pauseMovement()
-      }}
       onPointerDown={(event) => {
         pointerStartRef.current = event.clientX
         pauseMovement()
@@ -109,7 +100,6 @@ export function CinematicFilmReel({
         scheduleResume()
       }}
       onPointerUp={(event) => releasePointer(event.clientX)}
-      tabIndex={0}
     >
       <div className="cinematic-film-reel__rail cinematic-film-reel__rail--top" aria-hidden="true">
         <div>
