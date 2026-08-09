@@ -1,0 +1,139 @@
+.voyage-control,
+.voyage-button {
+  --control-x: 70%;
+  --control-y: 30%;
+  position: relative;
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 20px;
+  overflow: hidden;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--night-text);
+  background: transparent;
+  cursor: pointer;
+  isolation: isolate;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 220ms ease;
+}
+
+.voyage-control::before,
+.voyage-button::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+
+.voyage-control--primary,
+.voyage-button--primary {
+  border-color: rgba(128, 236, 240, 0.46);
+  background: rgba(8, 28, 39, 0.88);
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, 0.08),
+    0 14px 42px rgba(0, 0, 0, 0.34),
+    0 0 0 1px rgba(101, 229, 235, 0.08);
+}
+
+.voyage-control--primary::before,
+.voyage-button--primary::before {
+  background: radial-gradient(
+    circle at var(--control-x) var(--control-y),
+    rgba(255, 255, 255, 0.72),
+    rgba(49, 199, 232, 0.2) 22%,
+    transparent 58%
+  );
+}
+
+.voyage-control--primary:hover,
+.voyage-button--primary:hover {
+  border-color: rgba(166, 248, 247, 0.82);
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, 0.12),
+    0 18px 50px rgba(0, 0, 0, 0.4),
+    0 0 28px rgba(64, 213, 227, 0.14);
+  transform: translateY(-2px);
+}
+
+.voyage-control--primary:hover::before,
+.voyage-button--primary:hover::before {
+  opacity: 0.62;
+}
+
+.voyage-control--quiet,
+.voyage-button--quiet {
+  min-height: 44px;
+  padding-inline: 10px;
+  color: #c7d8da;
+}
+
+.voyage-control--quiet::after,
+.voyage-button--quiet::after {
+  content: '';
+  position: absolute;
+  right: 10px;
+  bottom: 6px;
+  left: 10px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--night-cyan), transparent);
+  transform: scaleX(0.24);
+  transform-origin: left;
+  transition: transform 220ms ease;
+}
+
+.voyage-control--quiet:hover,
+.voyage-button--quiet:hover {
+  color: #ffffff;
+  background: rgba(103, 228, 234, 0.05);
+}
+
+.voyage-control--quiet:hover::after,
+.voyage-button--quiet:hover::after {
+  transform: scaleX(1);
+}
+
+.voyage-control:focus-visible,
+.voyage-button:focus-visible {
+  outline: 2px solid #f4f7f8;
+  outline-offset: 4px;
+}
+
+.voyage-control:active,
+.voyage-button:active {
+  transform: translateY(1px) scale(0.985);
+}
+
+.voyage-control:disabled,
+.voyage-button:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+  filter: saturate(0.48);
+  transform: none;
+}
+
+.voyage-control.is-complete,
+.voyage-button.is-complete {
+  border-color: rgba(255, 232, 164, 0.54);
+  color: #fff4d2;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .voyage-control,
+  .voyage-button,
+  .voyage-control::before,
+  .voyage-button::before,
+  .voyage-control::after,
+  .voyage-button::after {
+    transition-duration: 1ms !important;
+  }
+}
