@@ -21,8 +21,8 @@ export const cinematicAssets = {
     poster: '/media/night-voyage/reference-aurora-waves.jpg',
   },
   eggLiquid: {
-    desktopVideo: '/media/night-voyage/reference-liquid-motion-desktop.mp4',
-    mobileVideo: '/media/night-voyage/reference-liquid-motion-mobile.mp4',
-    poster: '/media/night-voyage/reference-liquid-motion.jpg',
+    desktopVideo: '/media/night-voyage/future-reply-desktop.mp4',
+    mobileVideo: '/media/night-voyage/future-reply-mobile.mp4',
+    poster: '/media/night-voyage/future-reply.webp',
   },
 } satisfies Record<string, CinematicAssetSet>

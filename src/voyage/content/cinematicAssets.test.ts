@@ -14,6 +14,7 @@ describe('cinematicAssets', () => {
     const desktopVideos = Object.values(cinematicAssets).map((asset) => asset.desktopVideo)
 
     expect(new Set(desktopVideos).size).toBe(desktopVideos.length)
-    expect(desktopVideos.every((source) => source.includes('/reference-'))).toBe(true)
+    expect(cinematicAssets.eggLiquid.desktopVideo).toBe('/media/night-voyage/future-reply-desktop.mp4')
+    expect(cinematicAssets.eggLiquid.desktopVideo).not.toBe(cinematicAssets.mythPlanet.desktopVideo)
   })
 })
