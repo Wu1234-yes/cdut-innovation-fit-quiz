@@ -15,6 +15,7 @@ import './night-voyage/styles/screening-room.css'
 import './night-voyage/styles/atlas.css'
 import './night-voyage/styles/archive.css'
 import './night-voyage/styles/motion.css'
+import './night-voyage/styles/mobile.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

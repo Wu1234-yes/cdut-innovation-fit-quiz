@@ -16,11 +16,7 @@ describe('CinematicBackdrop', () => {
     )
 
     const video = container.querySelector('video')
-    const sources = container.querySelectorAll('video source')
-    expect(sources).toHaveLength(2)
-    expect(sources[0]).toHaveAttribute('media', '(min-width: 681px)')
-    expect(sources[0]).toHaveAttribute('src', '/media/night-voyage/intro-earth-desktop.mp4')
-    expect(sources[1]).toHaveAttribute('src', '/media/night-voyage/intro-earth-mobile.mp4')
+    expect(video).toHaveAttribute('src', '/media/night-voyage/intro-earth-desktop.mp4')
     expect(video).toHaveAttribute('poster', '/media/night-voyage/intro-earth.webp')
     expect(video).toHaveAttribute('autoplay')
     expect(video).toHaveAttribute('loop')

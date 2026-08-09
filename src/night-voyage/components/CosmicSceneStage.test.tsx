@@ -13,13 +13,9 @@ describe('CosmicSceneStage', () => {
       </CosmicSceneStage>,
     )
 
-    expect(container.querySelector('source[media="(min-width: 681px)"]')).toHaveAttribute(
+    expect(container.querySelector('video')).toHaveAttribute(
       'src',
       sceneVisuals.observation.desktopVideoSrc,
-    )
-    expect(container.querySelector('source:not([media])')).toHaveAttribute(
-      'src',
-      sceneVisuals.observation.mobileVideoSrc,
     )
     expect(screen.getByRole('img', { name: sceneVisuals.observation.alt })).toBeVisible()
     expect(screen.getByRole('button', { name: '扫描' })).toBeEnabled()

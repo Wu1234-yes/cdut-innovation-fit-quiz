@@ -104,7 +104,7 @@ const completeJourney = async (page: Page, testInfo: TestInfo) => {
   await expect(page.locator('.zero-gravity-signal__backdrop')).toBeVisible()
   if (page.viewportSize()!.width > 680) {
     await expect(page.locator('.zero-gravity-signal__backdrop video')).toBeVisible()
-    await expect(page.locator('.zero-gravity-signal__backdrop source[media="(min-width: 681px)"]')).toHaveAttribute(
+    await expect(page.locator('.zero-gravity-signal__backdrop video')).toHaveAttribute(
       'src',
       '/media/night-voyage/future-reply-desktop.mp4',
     )
@@ -264,8 +264,11 @@ test('keeps the future reply signal contained on mobile', async ({ page }) => {
   await page.getByRole('button', { name: '跳过这站' }).click()
   await page.getByRole('button', { name: '发现一束异常信号' }).click()
   await expect(page.getByRole('dialog', { name: '失重信号舱' })).toBeVisible()
-  await expect(page.locator('.zero-gravity-signal__backdrop')).toHaveClass(/is-(video|poster)/)
-  await expect(page.locator('.zero-gravity-signal__backdrop img')).toBeVisible()
+  await expect(page.locator('.zero-gravity-signal__backdrop')).toHaveClass(/is-video/)
+  await expect(page.locator('.zero-gravity-signal__backdrop video')).toHaveAttribute(
+    'src',
+    '/media/night-voyage/future-reply-mobile.mp4',
+  )
   await assertNoHorizontalOverflow(page)
 })
 

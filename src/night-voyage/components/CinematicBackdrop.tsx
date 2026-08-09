@@ -16,6 +16,13 @@ type BackdropStyle = CSSProperties & {
   '--backdrop-focal-point': string
 }
 
+const attemptPlayback = (video: HTMLVideoElement, onFailure: () => void) => {
+  const playback = video.play()
+  if (playback && typeof playback.catch === 'function') {
+    void playback.catch(onFailure)
+  }
+}
+
 export function CinematicBackdrop({
   alt,
   posterSrc,
@@ -29,7 +36,32 @@ export function CinematicBackdrop({
 }: CinematicBackdropProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [failed, setFailed] = useState(false)
-  const showVideo = Boolean(videoSrc || desktopVideoSrc || mobileVideoSrc) && !reducedMotion && !failed
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== 'undefined' && window.matchMedia?.('(max-width: 680px)').matches,
+  )
+  const activeVideoSrc = videoSrc ?? (isMobile ? mobileVideoSrc : desktopVideoSrc ?? mobileVideoSrc)
+  const activePosterSrc = isMobile ? mobilePosterSrc ?? posterSrc : posterSrc
+  const showVideo = Boolean(activeVideoSrc) && !reducedMotion && !failed
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia?.('(max-width: 680px)')
+    if (!mediaQuery) return
+
+    const handleViewportChange = () => {
+      setFailed(false)
+      setIsMobile(mediaQuery.matches)
+    }
+
+    mediaQuery.addEventListener?.('change', handleViewportChange)
+    return () => mediaQuery.removeEventListener?.('change', handleViewportChange)
+  }, [])
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video || !showVideo) return
+
+    attemptPlayback(video, () => setFailed(true))
+  }, [activeVideoSrc, showVideo])
 
   useEffect(() => {
     const handleVisibility = () => {
@@ -38,7 +70,7 @@ export function CinematicBackdrop({
       if (document.hidden) {
         video.pause()
       } else {
-        void video.play().catch(() => setFailed(true))
+        attemptPlayback(video, () => setFailed(true))
       }
     }
 
@@ -60,18 +92,18 @@ export function CinematicBackdrop({
       {showVideo ? (
         <video
           autoPlay
+          key={activeVideoSrc}
           loop
           muted
           onError={() => setFailed(true)}
+          onLoadedData={() => setFailed(false)}
+          onCanPlay={(event) => attemptPlayback(event.currentTarget, () => setFailed(true))}
           playsInline
-          poster={posterSrc}
-          preload="metadata"
+          poster={activePosterSrc}
+          preload="auto"
           ref={videoRef}
-          src={videoSrc}
-        >
-          {desktopVideoSrc && <source media="(min-width: 681px)" src={desktopVideoSrc} type="video/mp4" />}
-          {mobileVideoSrc && <source src={mobileVideoSrc} type="video/mp4" />}
-        </video>
+          src={activeVideoSrc}
+        />
       ) : (
         <picture>
           {mobilePosterSrc && <source media="(max-width: 680px)" srcSet={mobilePosterSrc} />}

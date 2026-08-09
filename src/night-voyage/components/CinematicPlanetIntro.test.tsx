@@ -35,7 +35,7 @@ describe('CinematicPlanetIntro', () => {
       <CinematicPlanetIntro onExplore={onExplore} onStart={onStart} />,
     )
 
-    expect(container.querySelector('source[media="(min-width: 681px)"]')).toHaveAttribute(
+    expect(container.querySelector('video')).toHaveAttribute(
       'src',
       '/media/night-voyage/intro-earth-desktop.mp4',
     )
